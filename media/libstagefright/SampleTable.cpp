@@ -283,12 +283,20 @@ status_t SampleTable::setSampleSizeParams(
     if (type == kSampleSizeType32) {
         mSampleSizeFieldSize = 32;
 
-        if (mDefaultSampleSize != 0) {
-            return OK;
+        // this needs to be 64 or overflow may occur from the calculation
+        uint64_t expectedDataSize = (uint64_t)12 + (uint64_t)mNumSampleSizes * (uint64_t)4;
+
+        // mDefaultSampleSize = 0 means sample table follows the field
+        if (((uint64_t)data_size < expectedDataSize) && (mDefaultSampleSize == 0)){
+            return ERROR_MALFORMED;
         }
 
-        if (data_size < 12 + mNumSampleSizes * 4) {
+        if (((uint64_t)data_size < expectedDataSize) && ((mDefaultSampleSize & 0xFF000000) != 0) ) {
             return ERROR_MALFORMED;
+        }
+
+        if (mDefaultSampleSize != 0) {
+            return OK;
         }
     } else {
         if ((mDefaultSampleSize & 0xffffff00) != 0) {
@@ -443,6 +451,10 @@ status_t SampleTable::getMaxSampleSize(size_t *max_size) {
     Mutex::Autolock autoLock(mLock);
 
     *max_size = 0;
+    if(mDefaultSampleSize > 0){
+        *max_size = mDefaultSampleSize;
+        return OK;
+    }
 
     for (uint32_t i = 0; i < mNumSampleSizes; ++i) {
         size_t sample_size;
@@ -607,14 +619,9 @@ status_t SampleTable::findSyncSampleNear(
 
     *sample_index = 0;
 
-    if (mSyncSampleOffset < 0) {
+    if (mSyncSampleOffset < 0 || mNumSyncSamples == 0) {
         // All samples are sync-samples.
         *sample_index = start_sample_index;
-        return OK;
-    }
-
-    if (mNumSyncSamples == 0) {
-        *sample_index = 0;
         return OK;
     }
 
@@ -657,7 +664,7 @@ status_t SampleTable::findSyncSampleNear(
             return err;
         }
 
-        uint32_t sample_time = mSampleIterator->getSampleTime();
+        uint64_t sample_time = mSampleIterator->getSampleTime();
 
         err = mSampleIterator->seekTo(x);
         if (err != OK) {
@@ -828,5 +835,11 @@ uint32_t SampleTable::getCompositionTimeOffset(uint32_t sampleIndex) {
     return mCompositionDeltaLookup->getCompositionTimeOffset(sampleIndex);
 }
 
+#ifdef QCOM_HARDWARE
+uint32_t SampleTable::getNumSyncSamples()
+{
+    return mNumSyncSamples;
+}
+#endif
 }  // namespace android
 
