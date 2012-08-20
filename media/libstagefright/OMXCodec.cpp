@@ -528,10 +528,11 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
         // These are PCM-like formats with a fixed sample rate but
         // a variable number of channels.
 
-        int32_t numChannels;
+        int32_t numChannels, sampleRate;
         CHECK(meta->findInt32(kKeyChannelCount, &numChannels));
+        CHECK(meta->findInt32(kKeySampleRate, &sampleRate));
 
-        setG711Format(numChannels);
+        setG711Format(numChannels, sampleRate);
     } else if (!strcasecmp(MEDIA_MIMETYPE_AUDIO_RAW, mMIME)) {
         CHECK(!mIsEncoder);
 
@@ -3273,10 +3274,19 @@ status_t OMXCodec::waitForBufferFilled_l() {
     }
     status_t err = mBufferFilled.waitRelative(mLock, kBufferFilledEventTimeOutNs);
     if (err != OK) {
-        CODEC_LOGE("Timed out waiting for output buffers: %d/%d",
-            countBuffersWeOwn(mPortBuffers[kPortIndexInput]),
-            countBuffersWeOwn(mPortBuffers[kPortIndexOutput]));
+    	if(countBuffersWeOwn(mPortBuffers[kPortIndexOutput]) > 0) {
+//    		CODEC_LOGI("Warnning Timed out waiting for output buffers: %d/%d",
+//				countBuffersWeOwn(mPortBuffers[kPortIndexInput]),
+//				countBuffersWeOwn(mPortBuffers[kPortIndexOutput]));
+    		return OK;
+    	}
+    	else {
+			CODEC_LOGE("Timed out waiting for output buffers: %d/%d",
+				countBuffersWeOwn(mPortBuffers[kPortIndexInput]),
+				countBuffersWeOwn(mPortBuffers[kPortIndexOutput]));
+    	}
     }
+
     return err;
 }
 
@@ -3496,9 +3506,10 @@ status_t OMXCodec::setAACFormat(
     return OK;
 }
 
-void OMXCodec::setG711Format(int32_t numChannels) {
+void OMXCodec::setG711Format(int32_t numChannels,int32_t sampleRate) {
     CHECK(!mIsEncoder);
-    setRawAudioFormat(kPortIndexInput, 8000, numChannels);
+    //setRawAudioFormat(kPortIndexInput, 8000, numChannels);
+    setRawAudioFormat(kPortIndexInput, sampleRate, numChannels);
 }
 
 void OMXCodec::setImageOutputFormat(

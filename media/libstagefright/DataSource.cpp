@@ -119,7 +119,7 @@ void DataSource::RegisterDefaultSniffers() {
     RegisterSniffer(SniffMP3);
     RegisterSniffer(SniffAAC);
     RegisterSniffer(SniffMPEG2PS);
-    RegisterSniffer(SniffWVM);
+    //RegisterSniffer(SniffWVM); //disable currently
 
     char value[PROPERTY_VALUE_MAX];
     if (property_get("drm.service.enabled", value, NULL)

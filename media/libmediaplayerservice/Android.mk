@@ -15,8 +15,12 @@ LOCAL_SRC_FILES:=               \
     TestPlayerStub.cpp          \
     MidiMetadataRetriever.cpp   \
     MidiFile.cpp                \
+    CedarPlayer.cpp       		\
     StagefrightPlayer.cpp       \
-    StagefrightRecorder.cpp
+    StagefrightRecorder.cpp		\
+    CedarAPlayerWrapper.cpp		\
+    SimpleMediaFormatProbe.cpp	\
+    MovAvInfoDetect.cpp
 
 LOCAL_SHARED_LIBRARIES :=     		\
 	libcutils             			\
@@ -27,6 +31,8 @@ LOCAL_SHARED_LIBRARIES :=     		\
 	libmedia              			\
 	libmedia_native       			\
 	libcamera_client      			\
+	libCedarX           			\
+	libCedarA           			\
 	libstagefright        			\
 	libstagefright_omx    			\
 	libstagefright_foundation       \
@@ -40,10 +46,18 @@ LOCAL_STATIC_LIBRARIES := \
 
 LOCAL_C_INCLUDES :=                                               \
 	$(call include-path-for, graphics corecg)                       \
+	$(TOP)/frameworks/av/media/CedarX-Projects/CedarXAndroid/IceCreamSandwich \
+	$(TOP)/frameworks/av/media/CedarX-Projects/CedarX/include/include_audio \
+	$(TOP)/frameworks/av/media/CedarX-Projects/CedarX/include/include_cedarv \
+	$(TOP)/frameworks/av/media/CedarX-Projects/CedarX/include \
+	$(TOP)/frameworks/av/media/CedarX-Projects/CedarA \
+	$(TOP)/frameworks/av/media/CedarX-Projects/CedarA/include \
 	$(TOP)/frameworks/av/media/libstagefright/include               \
 	$(TOP)/frameworks/av/media/libstagefright/rtsp                  \
 	$(TOP)/frameworks/native/include/media/openmax                  \
 	$(TOP)/external/tremolo/Tremolo                                 \
+
+LOCAL_CFLAGS +=-DCEDARX_ANDROID_VERSION=7
 
 LOCAL_MODULE:= libmediaplayerservice
 
