@@ -59,6 +59,11 @@ LOCAL_C_INCLUDES :=                                               \
 
 LOCAL_CFLAGS +=-DCEDARX_ANDROID_VERSION=7
 
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+    LOCAL_STATIC_LIBRARIES += libmedia_helper
+	LOCAL_C_INCLUDES += $(TOP)/frameworks/av/include/media
+endif
+
 LOCAL_MODULE:= libmediaplayerservice
 
 include $(BUILD_SHARED_LIBRARY)

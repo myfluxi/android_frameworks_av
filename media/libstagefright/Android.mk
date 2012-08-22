@@ -11,6 +11,14 @@ ifeq ($(TARGET_SOC),exynos4x12)
 LOCAL_CFLAGS += -DCONFIG_MFC_FPS
 endif
 
+ifeq ($(TARGET_SOC),exynos4210)
+LOCAL_CFLAGS += -DCONFIG_MFC_FPS
+endif
+
+ifeq ($(TARGET_SOC),exynos4x12)
+LOCAL_CFLAGS += -DCONFIG_MFC_FPS
+endif
+
 LOCAL_SRC_FILES:=                         \
         ACodec.cpp                        \
         AACExtractor.cpp                  \
@@ -64,7 +72,9 @@ LOCAL_SRC_FILES:=                         \
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 LOCAL_SRC_FILES+=                         \
-        ExtendedExtractor.cpp
+        ExtendedExtractor.cpp             \
+        ExtendedWriter.cpp
+
 ifeq ($(BOARD_HAVE_QCOM_FM),true)
 LOCAL_SRC_FILES+=                         \
         FMA2DPWriter.cpp
@@ -80,7 +90,8 @@ LOCAL_C_INCLUDES:= \
         $(TOP)/external/tremolo \
         $(TOP)/external/openssl/include \
         $(TOP)/hardware/qcom/display/libgralloc \
-        $(TOP)/hardware/qcom/media/mm-core/inc
+        $(TOP)/hardware/qcom/media/mm-core/inc \
+        $(TOP)/system/core/include
 
 LOCAL_SHARED_LIBRARIES := \
         libbinder \
