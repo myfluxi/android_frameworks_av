@@ -780,7 +780,7 @@ extern "C" bool _ZN7android11AudioSystem17isSeparatedStreamE19audio_stream_type_
     if (stream == 3  || stream == 9  || stream == 10
      || stream == 12 || stream == 13 || stream == 14)
     {
-        LOGD("isSeparatedStream: true");
+        ALOGD("isSeparatedStream: true");
         return true;
     }
 */

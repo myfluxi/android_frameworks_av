@@ -40,6 +40,7 @@ static void InitOMXParams(T *params) {
     params->nVersion.s.nStep = 0;
 }
 
+#if 0
 inline static void ConvertYUV420SemiPlanarToYUV420Planar(
         uint8_t *inyuv, uint8_t* outyuv,
         int32_t width, int32_t height) {
@@ -69,6 +70,7 @@ inline static void ConvertYUV420SemiPlanarToYUV420Planar(
         }
     }
 }
+#endif
 
 SoftMPEG4Encoder::SoftMPEG4Encoder(
             const char *name,

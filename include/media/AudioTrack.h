@@ -490,6 +490,8 @@ protected:
         Mutex               mMyLock;    // Thread::mLock is private
         Condition           mMyCond;    // Thread::mThreadExitedCondition is private
         bool                mPaused;    // whether thread is currently paused
+	Mutex		mWaitLock;
+        Condition	mCv;
     };
 
             // body of AudioTrackThread::threadLoop()

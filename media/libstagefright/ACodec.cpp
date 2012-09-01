@@ -3978,10 +3978,10 @@ void ACodec::FlushingOutputState::changeStateIfWeOwnAllBuffers() {
    if (mFlushComplete && mCodec->allYourBuffersAreBelongToUs( kPortIndexOutput )) {
         /*** TO DO - Enable this when display API is available ***/
         /*
-        LOGV("sending native window reconfigure for after port reconfig");
+        ALOGV("sending native window reconfigure for after port reconfig");
         status_t err = native_window_reconfigure_buffers(mCodec->mNativeWindow.get());
         if(err != 0){
-           LOGV("native_window_reconfigure_buffers call failed\n");
+           ALOGV("native_window_reconfigure_buffers call failed\n");
         }
         */
         ALOGV("FlushingOutputState Sending port disable ");
