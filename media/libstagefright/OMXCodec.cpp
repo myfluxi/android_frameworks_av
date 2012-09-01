@@ -4220,7 +4220,7 @@ void OMXCodec::setAC3Format(int32_t /*numChannels*/, int32_t /*sampleRate*/) {
     profileAC3.nChannels      =  2;
     profileAC3.eChannelConfig =  OMX_AUDIO_AC3_CHANNEL_CONFIG_2_0;
 
-    LOGE("numChannels = %d, profileAC3.nChannels = %d", numChannels, profileAC3.nChannels);
+    ALOGE("numChannels = %d, profileAC3.nChannels = %d", numChannels, profileAC3.nChannels);
 
     err = mOMX->setParameter(mNode, indexTypeAC3, &profileAC3, sizeof(profileAC3));
     CHECK_EQ(err, OK);
@@ -4232,7 +4232,7 @@ void OMXCodec::setAC3Format(int32_t /*numChannels*/, int32_t /*sampleRate*/) {
     err = mOMX->getParameter(mNode, OMX_IndexParamAudioPcm, &profilePcm, sizeof(profilePcm));
     profilePcm.nSamplingRate  =  sampleRate;
     err = mOMX->setParameter(mNode, OMX_IndexParamAudioPcm, &profilePcm, sizeof(profilePcm));
-    LOGE("for output port profileAC3.nSamplingRate = %d", profileAC3.nSamplingRate);
+    ALOGE("for output port profileAC3.nSamplingRate = %d", profileAC3.nSamplingRate);
 
     mOMX->getExtensionIndex(mNode, OMX_QCOM_INDEX_PARAM_AC3PP, &indexTypeAC3PP);
 

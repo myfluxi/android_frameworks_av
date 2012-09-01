@@ -1453,7 +1453,7 @@ status_t StagefrightRecorder::setupCameraSource(
 #endif
         *cameraSource = CameraSource::CreateFromCamera(
                 mCamera, mCameraProxy, mCameraId, videoSize, mFrameRate,
-                mPreviewSurface, useMeta /*storeMetaDataInVideoBuffers*/);
+                mPreviewSurface, false /*storeMetaDataInVideoBuffers*/);
     }
     mCamera.clear();
     mCameraProxy.clear();
@@ -1600,7 +1600,7 @@ status_t StagefrightRecorder::setupVideoEncoder(
 
     if (mIsMetaDataStoredInVideoBuffers) {
         ALOGW("Camera source supports metadata mode, create OMXCodec for metadata");
-        encoder_flags |= OMXCodec::kHardwareCodecsOnly;
+        //encoder_flags |= OMXCodec::kHardwareCodecsOnly;
         encoder_flags |= OMXCodec::kStoreMetaDataInVideoBuffers;
 #ifdef QCOM_HARDWARE
         if (property_get("ro.board.platform", value, "0")
