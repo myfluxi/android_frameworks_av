@@ -42,8 +42,11 @@ static int FileHasAcceptableExtension(const char *extension) {
         ".mp3", ".mp4", ".m4a", ".3gp", ".3gpp", ".3g2", ".3gpp2",
         ".mpeg", ".ogg", ".mid", ".smf", ".imy", ".wma", ".aac",
         ".wav", ".amr", ".midi", ".xmf", ".rtttl", ".rtx", ".ota",
-        ".mka", ".fl", ".flac", ".mxmf",
-        ".mpeg", ".mpg"
+        ".mkv", ".mka", ".webm", ".ts", ".fl", ".flac", ".mxmf",
+        ".avi", ".mpg", ".qcp", ".awb", ".ac3", ".dts", ".wmv",
+#ifdef QCOM_HARDWARE
+        ".ec3"
+#endif
     };
 
     static const char *kValidExtensionsAW[] = {

@@ -540,8 +540,7 @@ status_t SampleTable::findSampleAtTime(
     while (left < right) {
         uint32_t center = (left + right) / 2;
         uint64_t centerTime = mSampleTimeEntries[center].mCompositionTime;
-        ALOGV("req_time:%lld centerTime:%lld center:%d,mNumSampleSizes:%d cts:%lld",req_time, centerTime, center,mNumSampleSizes,
-        		(centerTime * 1000000ll) / 48000);
+
         if (req_time < centerTime) {
             right = center;
         } else if (req_time > centerTime) {
