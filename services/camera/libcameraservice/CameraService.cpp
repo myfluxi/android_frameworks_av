@@ -369,7 +369,7 @@ CameraService::Client::Client(const sp<CameraService>& cameraService,
     // Enable zoom, error, focus, and metadata messages by default
     enableMsgType(CAMERA_MSG_ERROR | CAMERA_MSG_ZOOM | CAMERA_MSG_FOCUS
 #ifndef QCOM_HARDWARE
-                  | CAMERA_MSG_PREVIEW_METADATA
+                  | CAMERA_MSG_PREVIEW_METADATA | CAMERA_MSG_FOCUS_MOVE
 #endif
                   );
 
@@ -559,14 +559,6 @@ status_t CameraService::Client::setPreviewWindow(const sp<IBinder>& binder,
     if (binder == mSurface) {
         return NO_ERROR;
     }
-
-#ifdef QCOM_HARDWARE
-    // We've raised the max on QCOM targets, but use less for camera.
-    if (window != 0) {
-        result = window.get()->perform(window.get(),
-                        NATIVE_WINDOW_SET_MIN_UNDEQUEUED_BUFFER_COUNT, 2);
-    }
-#endif
 
     if (window != 0) {
         result = native_window_api_connect(window.get(), NATIVE_WINDOW_API_CAMERA);
