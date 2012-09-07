@@ -2906,13 +2906,12 @@ status_t MediaPlayerService::AudioOutput::attachAuxEffect(int effectId)
 void MediaPlayerService::AudioOutput::CallbackWrapper(
         int event, void *cookie, void *info) {
     //ALOGV("callbackwrapper");
-    CallbackData *data = (CallbackData*)cookie;
-    data->lock();
-    AudioOutput *me = data->getOutput();
-    AudioTrack::Buffer *buffer = (AudioTrack::Buffer *) info;
 #ifdef QCOM_HARDWARE
     if (event == AudioTrack::EVENT_UNDERRUN) {
         ALOGW("Event underrun");
+        CallbackData *data = (CallbackData*)cookie;
+        data->lock();
+        AudioOutput *me = data->getOutput();
         if (me == NULL) {
             // no output set, likely because the track was scheduled to be reused
             // by another player, but the format turned out to be incompatible.
@@ -2927,6 +2926,10 @@ void MediaPlayerService::AudioOutput::CallbackWrapper(
     }
 #endif
     if (event == AudioTrack::EVENT_MORE_DATA) {
+        CallbackData *data = (CallbackData*)cookie;
+        data->lock();
+        AudioOutput *me = data->getOutput();
+        AudioTrack::Buffer *buffer = (AudioTrack::Buffer *)info;
         if (me == NULL) {
             // no output set, likely because the track was scheduled to be reused
             // by another player, but the format turned out to be incompatible.
@@ -2934,11 +2937,6 @@ void MediaPlayerService::AudioOutput::CallbackWrapper(
             buffer->size = 0;
             return;
         }
-#ifndef QCOM_HARDWARE
-    } else {
-        return;
-    }
-#endif
 
         size_t actualSize = (*me->mCallback)(
                 me, buffer->raw, buffer->size, me->mCallbackCookie);
@@ -2953,9 +2951,8 @@ void MediaPlayerService::AudioOutput::CallbackWrapper(
 
         buffer->size = actualSize;
         data->unlock();
-#ifdef QCOM_HARDWARE
     }
-#endif
+
     return;
 
 

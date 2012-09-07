@@ -1888,70 +1888,6 @@ sp<AudioFlinger::PlaybackThread::Track> AudioFlinger::PlaybackThread::createTrac
 
     bool isTimed = (flags & IAudioFlinger::TRACK_TIMED) != 0;
 
-    // client expresses a preference for FAST, but we get the final say
-    if (flags & IAudioFlinger::TRACK_FAST) {
-      if (
-            // not timed
-            (!isTimed) &&
-            // either of these use cases:
-            (
-              // use case 1: shared buffer with any frame count
-              (
-                (sharedBuffer != 0)
-              ) ||
-              // use case 2: callback handler and frame count is default or at least as large as HAL
-              (
-                (tid != -1) &&
-                ((frameCount == 0) ||
-                (frameCount >= (int) (mFrameCount * 2))) // * 2 is due to SRC jitter, see below
-              )
-            ) &&
-            // PCM data
-            audio_is_linear_pcm(format) &&
-            // mono or stereo
-            ( (channelMask == AUDIO_CHANNEL_OUT_MONO) ||
-              (channelMask == AUDIO_CHANNEL_OUT_STEREO) ) &&
-#ifndef FAST_TRACKS_AT_NON_NATIVE_SAMPLE_RATE
-            // hardware sample rate
-            (sampleRate == mSampleRate) &&
-#endif
-            // normal mixer has an associated fast mixer
-            hasFastMixer() &&
-            // there are sufficient fast track slots available
-            (mFastTrackAvailMask != 0)
-            // FIXME test that MixerThread for this fast track has a capable output HAL
-            // FIXME add a permission test also?
-        ) {
-        // if frameCount not specified, then it defaults to fast mixer (HAL) frame count
-        if (frameCount == 0) {
-            frameCount = mFrameCount * 2;   // FIXME * 2 is due to SRC jitter, should be computed
-        }
-        ALOGV("AUDIO_OUTPUT_FLAG_FAST accepted: frameCount=%d mFrameCount=%d",
-                frameCount, mFrameCount);
-      } else {
-        ALOGV("AUDIO_OUTPUT_FLAG_FAST denied: isTimed=%d sharedBuffer=%p frameCount=%d "
-                "mFrameCount=%d format=%d isLinear=%d channelMask=%d sampleRate=%d mSampleRate=%d "
-                "hasFastMixer=%d tid=%d fastTrackAvailMask=%#x",
-                isTimed, sharedBuffer.get(), frameCount, mFrameCount, format,
-                audio_is_linear_pcm(format),
-                channelMask, sampleRate, mSampleRate, hasFastMixer(), tid, mFastTrackAvailMask);
-        flags &= ~IAudioFlinger::TRACK_FAST;
-        // For compatibility with AudioTrack calculation, buffer depth is forced
-        // to be at least 2 x the normal mixer frame count and cover audio hardware latency.
-        // This is probably too conservative, but legacy application code may depend on it.
-        // If you change this calculation, also review the start threshold which is related.
-        uint32_t latencyMs = mOutput->stream->get_latency(mOutput->stream);
-        uint32_t minBufCount = latencyMs / ((1000 * mNormalFrameCount) / mSampleRate);
-        if (minBufCount < 2) {
-            minBufCount = 2;
-        }
-        int minFrameCount = mNormalFrameCount * minBufCount;
-        if (frameCount < minFrameCount) {
-            frameCount = minFrameCount;
-        }
-      }
-    }
-
     if (mType == DIRECT) {
         if (((format & AUDIO_FORMAT_MAIN_MASK) == AUDIO_FORMAT_PCM)
 #ifdef QCOM_HARDWARE
@@ -1987,6 +1923,70 @@ sp<AudioFlinger::PlaybackThread::Track> AudioFlinger::PlaybackThread::createTrac
 
     { // scope for mLock
         Mutex::Autolock _l(mLock);
+
+        // client expresses a preference for FAST, but we get the final say
+        if (flags & IAudioFlinger::TRACK_FAST) {
+          if (
+                // not timed
+                (!isTimed) &&
+                // either of these use cases:
+                (
+                  // use case 1: shared buffer with any frame count
+                  (
+                    (sharedBuffer != 0)
+                  ) ||
+                  // use case 2: callback handler and frame count is default or at least as large as HAL
+                  (
+                    (tid != -1) &&
+                    ((frameCount == 0) ||
+                    (frameCount >= (int) (mFrameCount * 2))) // * 2 is due to SRC jitter, see below
+                  )
+                ) &&
+                // PCM data
+                audio_is_linear_pcm(format) &&
+                // mono or stereo
+                ( (channelMask == AUDIO_CHANNEL_OUT_MONO) ||
+                  (channelMask == AUDIO_CHANNEL_OUT_STEREO) ) &&
+#ifndef FAST_TRACKS_AT_NON_NATIVE_SAMPLE_RATE
+                // hardware sample rate
+                (sampleRate == mSampleRate) &&
+#endif
+                // normal mixer has an associated fast mixer
+                hasFastMixer() &&
+                // there are sufficient fast track slots available
+                (mFastTrackAvailMask != 0)
+                // FIXME test that MixerThread for this fast track has a capable output HAL
+                // FIXME add a permission test also?
+            ) {
+            // if frameCount not specified, then it defaults to fast mixer (HAL) frame count
+            if (frameCount == 0) {
+                frameCount = mFrameCount * 2;   // FIXME * 2 is due to SRC jitter, should be computed
+            }
+            ALOGV("AUDIO_OUTPUT_FLAG_FAST accepted: frameCount=%d mFrameCount=%d",
+                    frameCount, mFrameCount);
+          } else {
+            ALOGV("AUDIO_OUTPUT_FLAG_FAST denied: isTimed=%d sharedBuffer=%p frameCount=%d "
+                    "mFrameCount=%d format=%d isLinear=%d channelMask=%d sampleRate=%d mSampleRate=%d "
+                    "hasFastMixer=%d tid=%d fastTrackAvailMask=%#x",
+                    isTimed, sharedBuffer.get(), frameCount, mFrameCount, format,
+                    audio_is_linear_pcm(format),
+                    channelMask, sampleRate, mSampleRate, hasFastMixer(), tid, mFastTrackAvailMask);
+            flags &= ~IAudioFlinger::TRACK_FAST;
+            // For compatibility with AudioTrack calculation, buffer depth is forced
+            // to be at least 2 x the normal mixer frame count and cover audio hardware latency.
+            // This is probably too conservative, but legacy application code may depend on it.
+            // If you change this calculation, also review the start threshold which is related.
+            uint32_t latencyMs = mOutput->stream->get_latency(mOutput->stream);
+            uint32_t minBufCount = latencyMs / ((1000 * mNormalFrameCount) / mSampleRate);
+            if (minBufCount < 2) {
+                minBufCount = 2;
+            }
+            int minFrameCount = mNormalFrameCount * minBufCount;
+            if (frameCount < minFrameCount) {
+                frameCount = minFrameCount;
+            }
+          }
+        }
 
         // all tracks in same audio session must share the same routing strategy otherwise
         // conflicts will happen when tracks are moved from one output to another by audio policy
@@ -6603,7 +6603,7 @@ bool AudioFlinger::RecordThread::threadLoop()
                                   ((mFormat != AUDIO_FORMAT_PCM_16_BIT) &&
                                   ((audio_source_t)mInputSource != AUDIO_SOURCE_VOICE_COMMUNICATION))))
 #else
-                                  ((int)mChannelCount == mReqChannelCount || mFormat != AUDIO_FORMAT_PCM_16_BIT)))
+                                  mFormat != AUDIO_FORMAT_PCM_16_BIT))
 #endif
                                         {
                                                 mBytesRead = mInput->stream->read(mInput->stream, buffer.raw, mInputBytes);
@@ -7391,8 +7391,9 @@ audio_io_handle_t AudioFlinger::openOutput(audio_module_handle_t module,
         if (pChannelMask != NULL) *pChannelMask = config.channel_mask;
 #ifdef QCOM_HARDWARE
         if (thread != NULL) {
-            if (pLatencyMs != NULL) *pLatencyMs = thread->latency();
 #endif
+            if (pLatencyMs != NULL) *pLatencyMs = thread->latency();
+
             // notify client processes of the new output creation
             thread->audioConfigChanged_l(AudioSystem::OUTPUT_OPENED);
 #ifdef QCOM_HARDWARE
