@@ -90,8 +90,6 @@ extern "C"
         return x10;
     }
 
-#ifdef ASM_OPT
-#else
 #ifdef HTFM   /* HTFM with uniform subsampling implementation, 2/28/01 */
     /*===============================================================
         Function:   SAD_MB_HTFM_Collect and SAD_MB_HTFM
@@ -368,7 +366,6 @@ extern "C"
     }
 
 #endif /* NO_INTER4V */
-#endif
 
 #ifdef __cplusplus
 }

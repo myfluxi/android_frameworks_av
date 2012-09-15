@@ -446,9 +446,6 @@ extern "C"
     *   @return true for correct operation; false if error happens
     */
     OSCL_IMPORT_REF Bool    PVCleanUpVideoEncoder(VideoEncControls *encCtrl);
-    OSCL_IMPORT_REF void ConvertYUV420SemiPlanarToYUV420Planar(
-      uint8_t *inyuv, uint8_t* outyuv,
-      int32_t width, int32_t height);
 
 #ifdef __cplusplus
 }
