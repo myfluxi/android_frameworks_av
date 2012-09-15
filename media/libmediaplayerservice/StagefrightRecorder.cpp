@@ -1443,7 +1443,7 @@ status_t StagefrightRecorder::setupCameraSource(
                 mTimeBetweenTimeLapseFrameCaptureUs);
         *cameraSource = mCameraSourceTimeLapse;
     } else {
-        bool useMeta = true;
+        bool useMeta = false; /*fix for amlogic recording*/
 #ifdef QCOM_HARDWARE
         char value[PROPERTY_VALUE_MAX];
         if (property_get("debug.camcorder.disablemeta", value, NULL) &&
