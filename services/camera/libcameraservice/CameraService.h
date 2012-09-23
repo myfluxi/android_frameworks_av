@@ -23,12 +23,15 @@
 #include <hardware/camera.h>
 
 /* This needs to be increased if we can have more cameras */
+#ifdef AMLOGIC_ONE_CAMERA_HACK
+#define MAX_CAMERAS 1
+#else
 #ifdef OMAP_ENHANCEMENT
 #define MAX_CAMERAS 3
 #else
 #define MAX_CAMERAS 2
 #endif
-
+#endif
 namespace android {
 
 class MemoryHeapBase;
