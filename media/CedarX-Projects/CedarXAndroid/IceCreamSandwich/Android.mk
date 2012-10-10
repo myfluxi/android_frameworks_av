@@ -13,6 +13,20 @@ LOCAL_SRC_FILES:=                         \
 		CedarXPlayer.cpp				  \
 		CedarXNativeRenderer.cpp
 
+ifeq ($(PLATFORM_VERSION),4.0.4)
+  ifeq ($(CEDARX_ADAPTER_VERSION),V14)
+	ADAPTER_DIRS:= $(shell find $(LOCAL_PATH)/CedarXAdapter/Android404_V14 -maxdepth 3 -type d)
+  endif
+  ifeq ($(CEDARX_ADAPTER_VERSION),V15)
+	ADAPTER_DIRS:= $(shell find $(LOCAL_PATH)/CedarXAdapter/Android404_V15 -maxdepth 3 -type d)
+  endif
+endif
+ifneq (,$(filter $(PLATFORM_VERSION),4.1.1 4.1.2))
+	ADAPTER_DIRS:= $(shell find $(LOCAL_PATH)/CedarXAdapter/Android411 -maxdepth 3 -type d)
+endif
+LOCAL_SRC_FILES += $(foreach dir,$(ADAPTER_DIRS),$(patsubst $(LOCAL_PATH)/%,%,$(wildcard $(dir)/*.cpp $(dir)/*.c)))
+
+
 LOCAL_C_INCLUDES:= \
 	$(JNI_H_INCLUDE) \
 	$(TOP)/frameworks/${AV_BASE_PATH}/include/media/stagefright \
@@ -68,7 +82,6 @@ LOCAL_STATIC_LIBRARIES += \
 
 LOCAL_STATIC_LIBRARIES += \
 	libcedarxstream \
-	libthirdpartstream \
 	libdemux_cedarm \
 
 ifeq ($(CEDARX_RTSP_VERSION),3)
@@ -97,7 +110,6 @@ LOCAL_LDFLAGS += \
 
 LOCAL_LDFLAGS += \
 	$(CEDARX_TOP)/../CedarAndroidLib/LIB_$(CEDARX_ANDROID_CODE)_$(CEDARX_CHIP_VERSION)/libcedarxstream.a \
-	$(CEDARX_TOP)/../CedarAndroidLib/LIB_$(CEDARX_ANDROID_CODE)_$(CEDARX_CHIP_VERSION)/libthirdpartstream.a \
 	$(CEDARX_TOP)/../CedarAndroidLib/LIB_$(CEDARX_ANDROID_CODE)_$(CEDARX_CHIP_VERSION)/libdemux_cedarm.a
 	
 ifeq ($(CEDARX_RTSP_VERSION),3)
@@ -136,11 +148,13 @@ LOCAL_LDFLAGS += \
 endif
 	
 ifeq ($(CEDARX_DEBUG_FRAMEWORK),Y)
-LOCAL_SHARED_LIBRARIES += libcedarxbase libswdrm 
+LOCAL_SHARED_LIBRARIES += libcedarxbase libswdrm libthirdpartstream libcedarxsftstream
 else
 LOCAL_LDFLAGS += \
 	$(CEDARX_TOP)/../CedarAndroidLib/LIB_$(CEDARX_ANDROID_CODE)_$(CEDARX_CHIP_VERSION)/libcedarxbase.so \
-	$(CEDARX_TOP)/../CedarAndroidLib/LIB_$(CEDARX_ANDROID_CODE)_$(CEDARX_CHIP_VERSION)/libswdrm.so
+	$(CEDARX_TOP)/../CedarAndroidLib/LIB_$(CEDARX_ANDROID_CODE)_$(CEDARX_CHIP_VERSION)/libswdrm.so \
+	$(CEDARX_TOP)/../CedarAndroidLib/LIB_$(CEDARX_ANDROID_CODE)_$(CEDARX_CHIP_VERSION)/libthirdpartstream.so \
+	$(CEDARX_TOP)/../CedarAndroidLib/LIB_$(CEDARX_ANDROID_CODE)_$(CEDARX_CHIP_VERSION)/libcedarxsftstream.so
 endif
 
 ifeq ($(CEDARX_USE_SFTDEMUX),Y)
