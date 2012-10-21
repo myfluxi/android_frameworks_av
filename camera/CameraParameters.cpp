@@ -118,7 +118,7 @@ const char CameraParameters::KEY_ZOOM_SUPPORTED[] = "zoom-supported";
 const char CameraParameters::KEY_SMOOTH_ZOOM_SUPPORTED[] = "smooth-zoom-supported";
 const char CameraParameters::KEY_FOCUS_DISTANCES[] = "focus-distances";
 const char CameraParameters::KEY_VIDEO_FRAME_FORMAT[] = "video-frame-format";
-#if defined(QCOM_HARDWARE) || defined(EXYNOS4X12_ENHANCEMENTS)
+#if defined(QCOM_HARDWARE) || defined(EXYNOS4X12_ENHANCEMENTS) || defined(HAVE_ISO)
 const char CameraParameters::KEY_SUPPORTED_ISO_MODES[] = "iso-values";
 const char CameraParameters::KEY_ISO_MODE[] = "iso";
 #endif
@@ -143,9 +143,10 @@ const char CameraParameters::KEY_HIGH_DYNAMIC_RANGE_IMAGING[] = "hdr";
 const char CameraParameters::KEY_SUPPORTED_HDR_IMAGING_MODES[] = "hdr-values";
 #endif
 #ifdef SAMSUNG_CAMERA_HARDWARE
+const char CameraParameters::KEY_ANTI_SHAKE_MODE[] = "anti-shake";
 const char CameraParameters::KEY_METERING[] = "metering";
 const char CameraParameters::KEY_WDR[] = "wdr";
-const char CameraParameters::KEY_ANTI_SHAKE_MODE[] = "anti-shake";
+const char CameraParameters::KEY_WEATHER[] = "weather";
 #endif
 const char CameraParameters::KEY_VIDEO_SIZE[] = "video-size";
 const char CameraParameters::KEY_SUPPORTED_VIDEO_SIZES[] = "video-size-values";

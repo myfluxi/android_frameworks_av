@@ -367,6 +367,7 @@ status_t AudioTrack::set(
                                                         &status);
         if(status != NO_ERROR) {
             ALOGE("createDirectTrack returned with status %d", status);
+            return status;
         }
         mAudioTrack = NULL;
         mSharedBuffer = NULL;
@@ -920,6 +921,11 @@ int AudioTrack::getSessionId() const
     return mSessionId;
 }
 
+extern "C" int _ZNK7android10AudioTrack12getSessionIdEv();
+extern "C" int _ZN7android10AudioTrack12getSessionIdEv() {
+    return _ZNK7android10AudioTrack12getSessionIdEv();
+}
+
 status_t AudioTrack::attachAuxEffect(int effectId)
 {
     ALOGV("attachAuxEffect(%d)", effectId);
@@ -1260,9 +1266,6 @@ ssize_t AudioTrack::write(const void* buffer, size_t userSize)
 {
 #ifdef QCOM_HARDWARE
     if (mDirectTrack != NULL) {
-        if (!mActive) {
-            mActive = true;
-        }
         mDirectTrack->write(buffer,userSize);
         return userSize;
     }
