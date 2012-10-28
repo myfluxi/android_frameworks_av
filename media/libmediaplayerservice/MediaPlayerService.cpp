@@ -648,6 +648,8 @@ MediaPlayerService::Client::Client(
     mAudioSessionId = audioSessionId;
     mUID = uid;
     mRetransmitEndpointValid = false;
+    mScaleWidth =0;
+    mScaleHeight = 0;
 
 #if CALLBACK_ANTAGONIZER
     ALOGD("create Antagonizer");
